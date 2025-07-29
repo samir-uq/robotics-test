@@ -4,32 +4,72 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Utilities.AutoCommandMap;
 
-public class Robot extends TimedRobot {
+
+/// This class extends LoggedRobot, which contains a lot of the base features
+
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+  private RobotContainer m_robotContainer;
 
-  public Robot() {
+  @Override
+  public void robotInit() {
+    // Documentation on logging
+    // (https://frc3748.github.io/Code-Team-Guide/SwerveDrive/logging/)
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+
+    /// isReal() refers to if the robot is real, this is beacuse WPILIB allows us to replay certain games as well as Simulations
+    /// More oabout the Logger could be figured out through research and official documentation
+    
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick
+      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    } else {
+      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    }
+
+    // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic
+    // Timestamps" in the "Understanding Data Flow" page
+    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    AutoCommandMap.mapCmds();
+
+    // creates a Robot container, which is the main object where we handle our robot logic.
     m_robotContainer = new RobotContainer();
   }
+
+  /// robotPeriodic is called every "frame" for the robot. 
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    if (m_robotContainer != null) {
+      m_robotContainer.periodic();
+
+    }    
+  }
+
+  /// all of these methods are self explanatory and should be looked into through official docs if you are unable to understand
+
+  @Override
+  public void disabledInit() {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+  }
 
   @Override
   public void autonomousInit() {
@@ -41,23 +81,33 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+  }
 
   @Override
   public void teleopInit() {
+    try {
+      CommandScheduler.getInstance().cancelAll();
+    } finally {
+
+    }
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -65,8 +115,10 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 }
