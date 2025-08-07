@@ -42,8 +42,9 @@ public class SetMotor extends Command {
   }
 
   // Returns true when the command should end.
+  // in this case, immedietly
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

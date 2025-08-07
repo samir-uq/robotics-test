@@ -41,8 +41,9 @@ public class RunMotor extends Command {
   }
 
   // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+  // since this is binded to whileTrue, we don't really need this!
+  // @Override
+  // public boolean isFinished() {
+  //   return false;
+  // }
 }
